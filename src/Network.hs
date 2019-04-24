@@ -1,120 +1,91 @@
-module Network (NetworkConn(..), reverseConn, forward, getResult, initializeNet, createConn, testForward, testBackward) where
+module Network
+  ( Mlp(..)
+  , createAllToAllConnections
+  , new
+  , printN
+  , forward
+  , getResult
+  ) where
 
-import qualified Data.Vector as Vec
-import Data.Vector ((!?), Vector)
-import Data.Maybe (fromJust)
-import Data.List
-import Debug.Trace
+import           Data.List
+import           Data.Maybe          (fromJust)
+import           Data.Vector         (Vector, (!), (!?))
+import qualified Data.Vector         as Vec
+import qualified Data.Vector.Mutable as MVec
+import           Debug.Trace
 
-import qualified System.Random as Rand
+import           System.Random       (StdGen)
+import qualified System.Random       as Rand
 
-data Perc = Perc {output :: Float, err :: Float, weights :: [Float], dWeights :: [Float]}
+data Neuron = Neuron
+  { nOutput  :: Float
+  , nErr     :: Float
+  , nWeights :: [Float]
+  , nInputs  :: [InputConnection]
+  } deriving (Show)
 
-type Input = [Float]
+type InputConnection = Int
 
-data NetworkConn = Default [Int] | CustomConn [[[Connection]]]
+type NeuronConnections = [InputConnection]
 
-instance Show NetworkConn where
-  show a = show "123"
+type LayerDims = [Int]
 
-type Connection = (Int, Int)
+type NeuronVector = Vector Neuron
 
-data Layer = Layer {lPers :: (Vector Perc), lForwardConn :: [[Connection]], lBackwardConn :: [[Connection]]}
+data Mlp =
+  Mlp LayerDims NeuronVector
+  deriving (Show)
 
-data Mlp = Mlp (Vector Layer)
-
-
-initializeNet :: NetworkConn -> IO Mlp
-initializeNet (Default sizes) =
-  initializeNet (CustomConn (createConn 0 sizes))
-initializeNet (CustomConn conns) = return $ Mlp $ Vec.empty
-
-
-createConn :: Int -> [Int] -> [[[Connection]]]
-createConn _ (_ : []) = []
-createConn i (s:s1:ss) =
-  consInLayer : createConn (i+1) (s1:ss)
+createAllToAllConnections :: Int -> LayerDims -> (LayerDims, [NeuronConnections])
+createAllToAllConnections inputsNumb dims =
+  ( dims
+  , reverse $
+    concat $
+    getRes $
+    foldl
+      (\(index, conns, res) size -> (index + size, [index .. index + size - 1], replicate size conns : res))
+      acc
+      dims)
   where
-    consInLayer  = [percCons | _ <- [1..s1]]
-    percCons = [(i, j) | j <- [0..s-1]]
-
-reverseConn :: [[[Connection]]] -> [[[Connection]]]
-reverseConn c =
-  let
---    take :: Int -> Int -> [Connection]
-    take l p = (c !! l) !! p
---    find :: Connection -> [Connection] -> Bool
-    find con cons =
-      (any (\c' -> c' == con) cons)
-    layerSize l = length (c !! l)
-    layersNum = length c
-    scan c'@(l', _) =
-      [(l, p) | l <- [l' .. layersNum - 1], p <- [0.. layerSize l - 1], find c' (take l p)]
-  in
-  [[scan (l,p) | p <- [0 .. layerSize l - 2]] | l <- [0 .. layersNum - 1]]
-
-
-reverseConn2 :: [Int] -> [[[Connection]]] -> [[[Connection]]]
-reverseConn2 sizes cons =
-
- p
-
-testBackward :: [[[Connection]]]
-testBackward =
-  [ [ [(0, 0), (0, 1)] -- 1, 0
-    , [(0, 0), (0, 1)] -- 1, 1
-    , [(0, 0), (0, 1)] -- 1, 2
-    ]
-  , [ [(1,0), (1,1), (1,2)] -- 2, 0
-    , [(1,0), (1,1), (1,2)] -- 2, 1
-    ]
-  ]
-
-testForward :: [[[Connection]]]
-testForward =
-  [ [ [(1,0), (1,1), (1,2)] -- 0, 0
-    , [(1,0), (1,1), (1,2)] -- 0, 1
-    ]
-  , [ [(2,0), (2,1)] -- 1,0
-    , [(2,0), (2,1)] -- 1,1
-    , [(2,0), (2,1)] -- 1,2
-    ]
-  ]
-
-
+    acc = (0, [-inputsNumb .. (-1)], [])
+    getRes (_, _, res) = res
 
 getResult :: Mlp -> [Float]
-getResult (Mlp layers) =
-  Vec.toList . Vec.map output . lPers . Vec.last $ layers
-
-
-
---i assumed that first layer is first in the array
-forward :: Input -> Mlp -> Mlp
-forward input mlp@(Mlp layers) =
-  Mlp $ Vec.map activateLayer layers
+getResult (Mlp dims neurons) =
+  Vec.toList . Vec.map nOutput $ outputsNeurons
   where
-    activateLayer layer@(Layer percs conn _) =
-      layer {lPers = Vec.fromList $ zipWith activate (Vec.toList percs) conn}
-    activate perc conn =
-      sigmoid (findYs conn) perc
-    findYs c =
-      map output (fromJust (findCon c mlp))
+    outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
+    outputsNumber = last dims
+    len = length neurons
+
+--Vec.snoc has complexity O(n). Maybe there is any option to change it to 0(1).
+-- Use mutable vector and modify instead of append?
+forward :: [Float] -> Mlp -> Mlp
+forward inputs (Mlp dims neurons) = Mlp dims $ foldl (\prev actual -> Vec.snoc prev (newActual actual prev)) Vec.empty neurons
+  where
+    newActual actual ready = actual {nOutput = sigmoid (loadRefs actual ready) (nWeights actual)}
+    loadRefs neuron ready = map (`find` ready) (nInputs neuron)
+    find ref ready
+      | ref < 0 = inputs !! (abs ref - 1)
+      | otherwise = nOutput $ ready ! ref
+
+new :: StdGen -> (LayerDims, [NeuronConnections]) -> IO Mlp
+new stdGen (dims, cons) =
+  return . Mlp dims . Vec.fromList . getRes $ foldr (\c (gen, net) -> initNeuron (Rand.split gen) c net) (stdGen, []) cons
+  where
+    initNeuron (g1, g2) c net = (g1, Neuron 0 0 (initWeights g2 (length c)) c : net)
+    initWeights g len = take len $ Rand.randomRs (0, 1) g
+    getRes (_, res) = res
+
+printN :: Mlp -> IO ()
+printN (Mlp _ arr) = mapM_ print arr
+
+empty :: Mlp
+empty = Mlp [] Vec.empty
 
 --PRIVATE
-
-sigmoid :: [Float] -> Perc -> Perc
-sigmoid input perc =
-  Perc output 0 weights' []
-  where 
-    weights' = weights perc
-    sumI = sum $ zipWith (\x y -> x * y) weights' input
+sigmoid :: [Float] -> [Float] -> Float
+sigmoid inputs weights = 1 / (1 + exp (beta * sumI))
+  where
     beta = -1
-    output = 1 / (1 + exp (beta * sumI))
-
-findCon :: [Connection] -> Mlp -> Maybe [Perc]
-findCon cons (Mlp layers) = mapM get cons 
-  where 
-    get (i, j) = layers !? i >>= (\layer -> (lPers layer) !? j)
-
-
+    sumI = sum $ zipWith (*) weights inputs
