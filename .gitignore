@@ -1,3 +1,5 @@
 .stack-work/
+.idea/*
+.idea/
 mlp-neural-network2.cabal
 *~
