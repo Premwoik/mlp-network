@@ -1,16 +1,17 @@
-module Data.Iris(learningData, testData) where
+module Data.Iris
+  ( learningData
+  , testData
+  ) where
 
 import           Data.List.Split
-
 
 parseOutput :: String -> [Double]
 parseOutput class' =
   case class' of
     "Iris-setosa"     -> [1, 0, 0]
     "Iris-versicolor" -> [0, 1, 0]
-    "Iris-virginica" ->  [0, 0, 1]
+    "Iris-virginica"  -> [0, 0, 1]
     _                 -> [1, 1, 1]
-
 
 parseLine :: String -> ([Double], [Double])
 parseLine line =
@@ -28,4 +29,3 @@ testData :: IO [([Double], [Double])]
 testData = do
   readData <- readFile "res/test/iris.data"
   return $ map parseLine . lines $ readData
-

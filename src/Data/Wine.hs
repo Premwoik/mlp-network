@@ -1,4 +1,7 @@
-module Data.Wine(learningData, testData) where
+module Data.Wine
+  ( learningData
+  , testData
+  ) where
 
 import           Data.List.Split
 
