@@ -22,13 +22,16 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - vector
+- split
+- aeson
+- bytestring
 - random
 
 library:
   source-dirs: src
 
 executables:
-  mlp-neural-network2-exe:
+  mlp-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -39,7 +42,7 @@ executables:
     - mlp-neural-network2
 
 tests:
-  mlp-neural-network2-test:
+  mlp-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:

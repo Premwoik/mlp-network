@@ -1,4 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Network
   ( Mlp(..)
@@ -12,7 +13,7 @@ module Network
   , backpropagateM
   , learnM
   ) where
-
+import GHC.Generics
 import           Control.Monad       (forM, forM_, zipWithM)
 import           Control.Monad.ST
 import           Data.List
@@ -24,13 +25,19 @@ import           Debug.Trace
 
 import           System.Random       (StdGen)
 import qualified System.Random       as Rand
+import Data.Aeson
 
 data Neuron = Neuron
-  { nOutput  :: Float
-  , nErr     :: Float
-  , nWeights :: [Float]
+  { nOutput  :: Double
+  , nErr     :: Double
+  , nWeights :: [Double]
   , nInputs  :: [InputConnection]
-  } deriving (Show)
+  } deriving (Show, Generic)
+
+instance FromJSON Neuron
+
+instance ToJSON Neuron where
+  toEncoding = genericToEncoding defaultOptions
 
 type InputConnection = Int
 
@@ -42,17 +49,22 @@ type NeuronVector = Vector Neuron
 
 data Mlp = Mlp
   { mDims    :: LayerDims
-  , mInputs  :: [Float]
+  , mInputs  :: [Double]
   , mNeurons :: NeuronVector
-  } deriving (Show)
+  } deriving (Show, Generic)
 
-type LearnData = ([Float], [Float])
+instance FromJSON Mlp
+
+instance ToJSON Mlp where
+  toEncoding = genericToEncoding defaultOptions
+
+type LearnData = ([Double], [Double])
 
 learnM :: [LearnData] -> Mlp -> Mlp
 learnM data' net =
   foldl (\net' (inputs, desireOutputs) -> backpropagateM desireOutputs (forwardM inputs net')) net data'
 
-forward :: [Float] -> Mlp -> Mlp
+forward :: [Double] -> Mlp -> Mlp
 forward inputs (Mlp dims _ neurons) =
   Mlp dims inputs $ foldl (\prev actual -> Vec.snoc prev (actual {nOutput = output actual prev})) Vec.empty neurons
   where
@@ -62,7 +74,7 @@ forward inputs (Mlp dims _ neurons) =
       | ref < 0 = inputs !! (abs ref - 1)
       | otherwise = nOutput $ ready ! ref
 
-forwardM :: [Float] -> Mlp -> Mlp
+forwardM :: [Double] -> Mlp -> Mlp
 forwardM inputs (Mlp dims _ neurons) =
   Mlp dims inputs $
   runST
@@ -71,7 +83,7 @@ forwardM inputs (Mlp dims _ neurons) =
           neuron <- MVec.unsafeRead ns i
           refs <- mapM (`find` ns) (nInputs neuron)
           let output = sigmoid refs (nWeights neuron)
-          MVec.unsafeWrite ns i (neuron {nOutput = output, nErr = 0}) -- provide nErr = in backpropagate function?
+          MVec.unsafeWrite ns i (neuron {nOutput = output, nErr = 0})
         Vec.unsafeFreeze ns)
   where
     size = length neurons - 1
@@ -79,7 +91,110 @@ forwardM inputs (Mlp dims _ neurons) =
       | ref < 0 = return $ inputs !! (abs ref - 1)
       | otherwise = nOutput <$> MVec.unsafeRead ns ref
 
-backpropagate :: [Float] -> Mlp -> Mlp
+
+backpropagateM :: [Double] -> Mlp -> Mlp
+backpropagateM desireOutput (Mlp dims inputs neurons) =
+  Mlp dims inputs $
+  runST
+    (do ns <- Vec.unsafeThaw neurons
+        let pOutput = zip [neuronsNum - outputsNum .. neuronsNum - 1] desireOutput
+        forM_ pOutput $ \(i, d) -> MVec.modify ns (\n -> n {nErr = d - nOutput n}) i
+        forM_ (reverse [0 .. neuronsNum - 1]) $ \i -> do
+          actual <- MVec.unsafeRead ns i
+          let zipped = zip (nInputs actual) (nWeights actual)
+          newWeights <-
+            forM zipped $ \(ref, weight) ->
+              if ref >= 0
+                then do
+                  n <- MVec.unsafeRead ns ref
+                  MVec.unsafeWrite ns ref $ n {nErr = nErr n + computeError actual weight}
+                  return $ computeWeight actual weight (nOutput n)
+                else return $ computeWeight actual weight (inputs !! (abs ref - 1))
+
+          MVec.unsafeWrite ns i (actual {nWeights = newWeights})
+        Vec.unsafeFreeze ns)
+  where
+    neuronsNum = length neurons
+    outputsNum = length desireOutput
+
+-- CREATION and HELPERS
+data MlpConfig = MlpConfig
+  { confBias         :: Bool
+  , confDims         :: [Int]
+  , confInputsNumber :: Int
+  , confConnections  :: [NeuronConnections]
+  } deriving (Show)
+
+createAllToAllConnections :: MlpConfig -> MlpConfig
+createAllToAllConnections conf@(MlpConfig True dims inputsNum _) =
+  makeRes $
+  foldl
+    (\(index, conns, res) size ->
+       (index + size + 1, [index .. index + size], ([] : replicate size conns) : res))
+    (1, [-inputsNum .. 0], [])
+    dims
+  where
+    makeRes (_, _, res) =  conf {confConnections = [] : concat (reverse res)}
+createAllToAllConnections conf@(MlpConfig False dims inputsNum _) =
+  makeRes $
+  foldl
+    (\(index, conns, res) size ->
+       (index + size, [index .. index + size -1], replicate size conns : res))
+    (0, [-inputsNum .. (-1)], [])
+    dims
+  where
+    makeRes (_, _, res) =  conf {confConnections = concat (reverse res)}
+
+new :: StdGen -> MlpConfig -> IO Mlp
+new stdGen (MlpConfig bias dims inputs cons) =
+  return . Mlp dims [] . Vec.fromList . getRes $
+  foldr (\c (gen, net) -> initNeuron (Rand.split gen) c net) (stdGen, []) cons
+  where
+    initNeuron (g1, g2) c net = (g1, Neuron 0 0 (initWeights g2 (length c)) c : net)
+    initWeights g len = take len  $  Rand.randomRs (-1, 1) g
+    getRes (_, res) = res
+
+getResult :: Mlp -> [Double]
+getResult (Mlp dims _ neurons) = Vec.toList . Vec.map nOutput $ outputsNeurons
+  where
+    outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
+    outputsNumber = last dims
+    len = length neurons
+
+printN :: Mlp -> IO ()
+printN (Mlp _ _ arr) = mapM_ print arr
+
+empty :: Mlp
+empty = Mlp [] [] Vec.empty
+
+--PRIVATE
+computeError :: Neuron -> Double -> Double
+computeError n w =
+ nErr n * w * (1 - nOutput n) * nOutput n
+
+computeWeight :: Neuron -> Double -> Double -> Double
+computeWeight neuron oldWeight yOutput =
+  c
+--  traceShow (oldWeight - ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput) c
+  where
+    c = momentum * oldWeight - ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
+    ni = -0.1
+    momentum = 1
+
+sigmoid :: [Double] -> [Double] -> Double
+sigmoid [] [] = 1
+sigmoid inputs weights
+--  | trace ("[DEBUG] sigmoid - " ++ show inputs ++ " || " ++ show weights) False = undefined
+  | otherwise = 1 / (1 + exp (beta * sumI))
+  where
+    beta = -1
+    sumI = sum $ zipWith (*) weights inputs
+
+
+-- UNDER WORK
+
+
+backpropagate :: [Double] -> Mlp -> Mlp
 backpropagate desireOutput mlp@(Mlp _ inputs neurons) =
   toMlp $ foldr (\i ns -> proceedNeuron i (ns ! i) ns) prepareOutputLayer [0 .. neuronsNum - 1]
   where
@@ -100,91 +215,3 @@ backpropagate desireOutput mlp@(Mlp _ inputs neurons) =
         (zip [neuronsNum - length desireOutput .. neuronsNum - 1] desireOutput)
     neuronsNum = length neurons
     toMlp x = mlp {mNeurons = x}
-
-backpropagateM :: [Float] -> Mlp -> Mlp
-backpropagateM desireOutput (Mlp dims inputs neurons) =
-  Mlp dims inputs $
-  runST
-    (do ns <- Vec.unsafeThaw neurons
-        let pOutput = zip [neuronsNum - outputsNum .. neuronsNum - 1] desireOutput
-        forM_ pOutput $ \(i, d) -> MVec.modify ns (\n -> n {nErr = d - nOutput n}) i
-        forM_ (reverse [0 .. neuronsNum - 1]) $ \i -> do
-          actual <- MVec.unsafeRead ns i
-          let zipped = zip (nInputs actual) (nWeights actual)
-          newWeights <-
-            forM zipped $ \(ref, weight) ->
-              if ref >= 0
-                then do
-                  n <- MVec.unsafeRead ns ref
-                  MVec.unsafeWrite ns ref $ n {nErr = nErr n + computeError actual weight} -- + should be here instead of -
-                  return $ computeWeight actual weight (nOutput n)
-                else return $ computeWeight actual weight (inputs !! (abs ref - 1))
-          MVec.unsafeWrite ns i (actual {nWeights = newWeights})
-        Vec.unsafeFreeze ns)
-  where
-    neuronsNum = length neurons
-    outputsNum = length desireOutput
-
--- CREATION and HELPERS
-data MlpConfig = MlpConfig
-  { confBias         :: Bool
-  , confDims         :: [Int]
-  , confInputsNumber :: Int
-  , confConnections  :: [NeuronConnections]
-  } deriving Show
-
-createAllToAllConnections :: MlpConfig -> MlpConfig
-createAllToAllConnections conf@(MlpConfig bias dims inputsNum _) =
-  makeRes $
-  foldl
-    (\(index, conns, res) size -> (newIndex index size, [index .. newEndLimit index size], consForLayer conns size : res))
-    acc
-    dims
-  where
-    acc = if bias then (1, [-inputsNum .. 0], []) else (0, [-inputsNum .. (-1)], [])
-    newIndex i s = if bias then i + s + 1 else i + s
-    newEndLimit i s = if bias then i + s else i + s - 1
-    consForLayer c s = if bias then [] : replicate s c else replicate s c
-    makeRes (_, _, res) =  conf {confConnections = if bias then [] : concat (reverse res) else concat (reverse res)}
-
-new :: StdGen -> MlpConfig -> IO Mlp
-new stdGen (MlpConfig bias dims _ cons) =
-  return . Mlp dims [] . Vec.fromList . getRes $
-  foldr (\c (gen, net) -> initNeuron (Rand.split gen) c net) (stdGen, []) cons
-  where
-    initNeuron (g1, g2) c net = (g1, Neuron 1 0 (initWeights g2 (length c)) c : net)
-    initWeights g len = take len $ Rand.randomRs (0, 1) g
-    getRes (_, res) = res
-
-getResult :: Mlp -> [Float]
-getResult (Mlp dims _ neurons) = Vec.toList . Vec.map nOutput $ outputsNeurons
-  where
-    outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
-    outputsNumber = last dims
-    len = length neurons
-
-printN :: Mlp -> IO ()
-printN (Mlp _ _ arr) = mapM_ print arr
-
-empty :: Mlp
-empty = Mlp [] [] Vec.empty
-
---PRIVATE
-computeError :: Neuron -> Float -> Float
-computeError n w
---  | trace ("computError" ++ show (nErr n)) False = undefined
-  | otherwise = nErr n * w * (1 - nOutput n) * nOutput n
-
-computeWeight :: Neuron -> Float -> Float -> Float
-computeWeight neuron oldWeight yOutput
---  | trace ("computeWeight" ++ show (nErr neuron)) False = undefined
-  | otherwise = oldWeight - ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
-  where
-    ni = -0.5
-
-sigmoid :: [Float] -> [Float] -> Float
-sigmoid [] [] = 1
-sigmoid inputs weights = 1 / (1 + exp (beta * sumI))
-  where
-    beta = -1
-    sumI = sum $ zipWith (*) weights inputs
