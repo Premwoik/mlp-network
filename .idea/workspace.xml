@@ -4,20 +4,7 @@
     <list default="true" id="fb931e86-6200-4f26-ba77-3580ebe11734" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/../../1_MPH/brownian-motion-sim/app/MonteCarlo.hs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Main.hs" beforeDir="false" afterPath="$PROJECT_DIR$/app/Main.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mlp-neural-network2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/mlp-neural-network2.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/package.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/learn/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/res/learn/iris.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/learn/wine.data" beforeDir="false" afterPath="$PROJECT_DIR$/res/learn/wine.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/test/wine.data" beforeDir="false" afterPath="$PROJECT_DIR$/res/test/wine.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/AndLogic.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/AndLogic.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/Iris.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Iris.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Data/Wine.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Data/Wine.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network/Factory.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network/Factory.hs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Network/Helpers.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network/Helpers.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stack.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/stack.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../C/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/../../C/a.out" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -36,39 +23,14 @@
     <settings elmCompilerPath="" elmFormatPath="" elmTestPath="" isElmFormatOnSaveEnabled="false" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5830619">
+    <splitter split-orientation="horizontal" split-proportion="0.42214984">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/app/Main.hs">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="210">
-                  <caret line="14" column="20" lean-forward="true" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/res/learn/iris.data">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1724" />
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/Data/Wine.hs">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="75">
-                  <caret line="5" selection-start-line="5" selection-end-line="5" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/Data/Iris.hs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="60">
-                  <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
+                <state>
+                  <caret column="15" selection-start-column="15" selection-end-column="15" />
                 </state>
               </provider>
             </entry>
@@ -76,8 +38,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="150">
-                  <caret line="10" column="62" selection-start-line="10" selection-start-column="62" selection-end-line="10" selection-end-column="62" />
+                <state relative-caret-position="450">
+                  <caret line="30" selection-start-line="30" selection-end-line="30" />
                 </state>
               </provider>
             </entry>
@@ -98,8 +60,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/Network/Helpers.hs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="286">
-                  <caret line="119" column="7" lean-forward="true" selection-start-line="119" selection-start-column="7" selection-end-line="119" selection-end-column="7" />
+                <state relative-caret-position="271">
+                  <caret line="107" column="52" selection-start-line="107" selection-start-column="52" selection-end-line="107" selection-end-column="52" />
                 </state>
               </provider>
             </entry>
@@ -170,9 +132,9 @@
         <option value="$PROJECT_DIR$/src/Data/Iris.hs" />
         <option value="$PROJECT_DIR$/src/Data/Wine.hs" />
         <option value="$PROJECT_DIR$/src/Network.hs" />
+        <option value="$PROJECT_DIR$/src/Network/Factory.hs" />
         <option value="$PROJECT_DIR$/app/Main.hs" />
         <option value="$PROJECT_DIR$/src/Network/Helpers.hs" />
-        <option value="$PROJECT_DIR$/src/Network/Factory.hs" />
       </list>
     </option>
   </component>
@@ -347,12 +309,12 @@
       <workItem from="1559081810274" duration="77000" />
       <workItem from="1559081951049" duration="485000" />
       <workItem from="1559082478297" duration="12121000" />
-      <workItem from="1559134728208" duration="15478000" />
+      <workItem from="1559134728208" duration="16995000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="199827000" />
+    <option name="totallyTimeSpent" value="201344000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -565,16 +527,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Main.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="20" lean-forward="true" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/learn/iris.data">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1724" />
+        <state relative-caret-position="458">
+          <caret line="146" column="30" lean-forward="true" selection-start-line="146" selection-start-column="30" selection-end-line="146" selection-end-column="30" />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Data/Wine.hs">
@@ -584,24 +541,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Data/Iris.hs">
+    <entry file="file://$PROJECT_DIR$/app/Main.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
+        <state relative-caret-position="315">
+          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Network/Helpers.hs">
+    <entry file="file://$PROJECT_DIR$/src/Data/Iris.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="119" column="7" lean-forward="true" selection-start-line="119" selection-start-column="7" selection-end-line="119" selection-end-column="7" />
+        <state>
+          <caret column="15" selection-start-column="15" selection-end-column="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="62" selection-start-line="10" selection-start-column="62" selection-end-line="10" selection-end-column="62" />
+        <state relative-caret-position="450">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Network/Helpers.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="107" column="52" selection-start-line="107" selection-start-column="52" selection-end-line="107" selection-end-column="52" />
         </state>
       </provider>
     </entry>
