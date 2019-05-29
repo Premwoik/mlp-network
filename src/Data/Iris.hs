@@ -1,6 +1,5 @@
 module Data.Iris
-  ( learningData
-  , testData
+  ( data'
   ) where
 
 import           Data.List.Split
@@ -20,12 +19,7 @@ parseLine line =
       input = map read (init pLine) :: [Double]
    in (input, output)
 
-learningData :: IO [([Double], [Double])]
-learningData = do
+data' :: IO [([Double], [Double])]
+data' = do
   readData <- readFile "res/learn/iris.data"
-  return $ map parseLine . lines $ readData
-
-testData :: IO [([Double], [Double])]
-testData = do
-  readData <- readFile "res/test/iris.data"
   return $ map parseLine . lines $ readData

@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/app" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.stack-work" />
+      <excludePattern pattern="elm-stuff" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -41,5 +42,6 @@
     <orderEntry type="library" name="integer-logarithms-1.0.2.2" level="project" />
     <orderEntry type="library" name="ghc-boot-th-8.6.4" level="project" />
     <orderEntry type="library" name="pretty-1.1.3.6" level="project" />
+    <orderEntry type="library" name="vector-shuffling-1.1" level="project" />
   </component>
 </module>

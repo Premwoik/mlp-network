@@ -26,6 +26,7 @@ dependencies:
 - aeson
 - bytestring
 - random
+- vector-shuffling
 
 library:
   source-dirs: src

@@ -139,18 +139,15 @@ computeError :: Neuron -> Double -> Double
 computeError n w = nErr n * w * (1 - nOutput n) * nOutput n
 
 computeWeight :: Neuron -> Double -> Double -> Double
-computeWeight neuron oldWeight yOutput = c
+computeWeight neuron oldWeight yOutput = c --traceShow (show oldWeight ++ " :: " ++ show (ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput)) c
   where
-    c = momentum * oldWeight - ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
-    ni = -0.1
+    c = momentum * oldWeight + ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
+    ni = 0.3
     momentum = 1
 
---  traceShow (oldWeight - ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput) c
 sigmoid :: [Double] -> [Double] -> Double
 sigmoid [] [] = 1
-sigmoid inputs weights
---  | trace ("[DEBUG] sigmoid - " ++ show inputs ++ " || " ++ show weights) False = undefined
-  | otherwise = 1 / (1 + exp (beta * sumI))
+sigmoid inputs weights = 1 / (1 + exp (beta * sumI))
   where
     beta = -1
     sumI = sum $ zipWith (*) weights inputs

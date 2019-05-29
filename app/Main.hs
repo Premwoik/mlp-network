@@ -1,18 +1,21 @@
 module Main where
 
+import           Data.AndLogic        as And
 import qualified Data.ByteString.Lazy as BS
+import           Data.Vector
 import           Debug.Trace
 import qualified Network.Factory      as Factory
 import           Network.Helpers
 
 main :: IO ()
 main = do
-  (bRes, bNet) <- Factory.irisOptimal
---    (bRes, bNet) <- Factory.wineOptimal
+--  res <- Factory.irisOptimal
+--  (bRes, bNet) <- Factory.andLogicOptimal
+  res <- Factory.wineOptimal
   putStrLn "RESULT:"
-  printNet bNet
-  print bRes
+  kFoldSummary res
   return ()
+
 -- PRIVATE
 --  BS.writeFile "net" $ encode bNet
 --  readNet <- BS.readFile "net"

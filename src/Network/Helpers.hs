@@ -2,28 +2,29 @@ module Network.Helpers
   ( showNet
   , resAll
   , tester
-  , normalizeInput
-  , normalize
+  , minMaxScaling
+  , kFold
+  , kFoldSummary
   , findBestNet
   , printNet
+  , splits
   , getResult
   , createAllToAllConnections
   ) where
 
-import           Control.Monad        (forM, forM_, zipWithM)
+import           Control.Monad        (forM, forM_, zipWithM, zipWithM_)
 import           Data.Aeson
 import qualified Data.ByteString.Lazy as BS
-import qualified Data.Iris            as Iris
+import           Data.List.Split      (chunksOf)
 import           Data.Maybe
 import qualified Data.Vector          as Vec
-import qualified Data.Wine            as Wine
 import           Debug.Trace
 import           Network
 import           System.Random        (StdGen)
 import qualified System.Random        as Rand
-
 import           Data.List
 import           Data.Ord
+import VectorShuffling.Immutable
 
 createAllToAllConnections :: MlpConfig -> MlpConfig
 createAllToAllConnections conf@(MlpConfig True dims inputsNum _) =
@@ -69,18 +70,19 @@ findBestNet i cons learnData testData =
     findBest = maximumBy (comparing fst)
 
 resAll :: [([Double], [Double])] -> Mlp -> IO ()
-resAll data' mlp = mapM_ (\(i, o) -> trace (show o) $ print (getResult (forwardM i mlp))) data'
+resAll data' mlp = mapM_ (\(i, o) -> print (getResult (forwardM i mlp))) data'
 
 tester :: [([Double], [Double])] -> Mlp -> (Double, Mlp)
-tester data' mlp =
-  makeRes $ sum $ map (\(i, destOutput) -> compare destOutput (getResult (forwardM (normalizeInput i) mlp))) data'
+tester data' mlp = makeRes $ sum $ map (\(i, destOutput) -> compare destOutput (getResult (forwardM i mlp))) data'
   where
     makeRes s = ((s / fromIntegral (length data')) * 100, mlp)
-    compare dest res =
-      if snd (maxi dest) == snd (maxi res)
-        then 1
-        else 0
+    compare dest res
+      | otherwise =
+        if snd (maxi dest) == snd (maxi res)
+          then 1
+          else 0
 
+--      | traceShow (show dest ++ " | " ++ show res) False = undefined
 normalize :: ([Double], [Double]) -> ([Double], [Double])
 normalize (input, d) = (normalizeInput input, d)
 
@@ -88,5 +90,45 @@ normalizeInput :: [Double] -> [Double]
 normalizeInput input = map (\x -> (x - minimum input) / v) input
   where
     v = maximum input - minimum input
+
+minMaxScaling :: [([Double], [Double])] -> [([Double], [Double])]
+minMaxScaling d = zipWith (\n (_, c) -> (n, c)) (scale (map fst d)) d
+  where
+    scale inputs =
+      let maxMin = findMaxMin inputs
+       in map (zipWith (\(max', min') val -> (val - min') / (max' - min')) maxMin) inputs
+
+findMaxMin :: [[Double]] -> [(Double, Double)]
+findMaxMin d = foldl (zipWith find) initAcc d
+  where
+    initAcc = map (\x -> (x, x)) $ head d
+    find (max', min') val
+      | val > max' = (val, min')
+      | val < min' = (max', val)
+      | otherwise = (max', min')
+
+kFoldSummary :: [(Double, Mlp)] -> IO ()
+kFoldSummary l = do
+  zipWithM_ (\i (v, _) -> putStrLn ("K=" ++ show i ++ " accuracy: " ++ show v)) [1 ..] l
+  putStrLn $ "Summary accuracy: " ++ show sumUpRes
+  where
+    sumUpRes = sum (map fst l) / len
+    len = fromIntegral $ length l
+
+kFold :: StdGen->  Int -> [([Double], [Double])] -> [([([Double], [Double])], [([Double], [Double])])]
+kFold g k d = map prepareFold [0 .. k - 1]
+  where
+    prepareFold i = (\(train, test) -> (concat train, test)) (remove i split')
+    split' = map (\x -> Vec.toList (fst (shuffle (Vec.fromList x) g))) (splits k d)
+
+splits :: Int -> [([Double], [Double])] -> [[([Double], [Double])]]
+splits k d = foldl (\acc x -> zipWith (++) (chunksOf (num x) x) acc) initAcc grouped
+  where
+    initAcc = replicate k []
+    num x = ceiling $ fromIntegral (length x) / fromIntegral k
+    grouped = groupBy (\(_, b) (_, b') -> b == b') d
+
+remove :: Int -> [a] -> ([a], a)
+remove i items = traceShow (show (length items)) (take i items ++ drop (1 + i) items, items !! i)
 
 maxi xs = maximumBy (comparing fst) (zip xs [0 ..])

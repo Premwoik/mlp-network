@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Building..."
-stack build
+time stack build
 echo "Done."
 echo "Running..."
-stack exec mlp-exe
+time stack exec mlp-exe
 echo "Done."
