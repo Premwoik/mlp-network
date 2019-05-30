@@ -5,11 +5,13 @@ module Network
   ( Mlp(..)
   , MlpConfig(..)
   , Neuron(..)
+  , LearnData
   , new
   , forward
   , forwardM
   , backpropagateM
   , learnM
+  , empty
   ) where
 
 import           Control.Monad       (forM, forM_, zipWithM)
