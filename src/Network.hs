@@ -1,6 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE DeriveGeneric  #-}
---{-# LANGUAGE TypeApplications #-}
 
 module Network
   ( Mlp(..)
@@ -35,7 +34,7 @@ class Network net where
 
 instance Network Mlp where
   learn = learnM
-  forward  = forwardM
+  forward = forwardM
   backpropagate = backpropagateM
   getResult = getResultM
 
@@ -72,7 +71,6 @@ instance ToJSON Mlp where
 
 type LearnData = ([Double], [Double])
 
-
 -- CREATION and HELPERS
 data MlpConfig = MlpConfig
   { confBias         :: Bool
@@ -94,9 +92,7 @@ empty :: Mlp
 empty = Mlp [] [] Vec.empty
 
 --PRIVATE
-
 -- network default implementations
-
 learnM :: [LearnData] -> Mlp -> Mlp
 learnM data' net =
   foldl (\net' (inputs, desireOutputs) -> backpropagateM desireOutputs (forwardM inputs net')) net data'
@@ -142,14 +138,12 @@ backpropagateM desireOutput (Mlp dims inputs neurons) =
     neuronsNum = length neurons
     outputsNum = length desireOutput
 
-
 getResultM :: Mlp -> [Double]
 getResultM (Mlp dims _ neurons) = Vec.toList . Vec.map nOutput $ outputsNeurons
   where
     outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
     outputsNumber = last dims
     len = length neurons
-
 
 -- computations
 computeError :: Neuron -> Double -> Double

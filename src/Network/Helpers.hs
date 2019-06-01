@@ -71,7 +71,7 @@ minMaxScaling d = zipWith (\n (_, c) -> (n, c)) (scale (map fst d)) d
       let maxMin = findMaxMin inputs
        in map (zipWith (\(max', min') val -> (val - min') / (max' - min')) maxMin) inputs
 
-kFoldSummary :: (Network net) =>  [(Double, net)] -> IO ()
+kFoldSummary :: (Network net) => [(Double, net)] -> IO ()
 kFoldSummary l = do
   zipWithM_ (\i (v, _) -> putStrLn ("K=" ++ show i ++ " accuracy: " ++ show v)) [1 ..] l
   putStrLn $ "Summary accuracy: " ++ show sumUpRes

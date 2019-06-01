@@ -1,14 +1,14 @@
 module Network.Factory where
 
-import           AutoEncoder
-import qualified Data.AndLogic      as And
-import qualified Data.Iris          as Iri
-import qualified Data.Wine          as Wi
+import qualified Data.AndLogic       as And
+import qualified Data.Iris           as Iri
+import qualified Data.Wine           as Wi
 import           Network
+import           Network.AutoEncoder
 import           Network.Helpers
 import           Network.MlpEncoder
-import           System.Random      (StdGen)
-import qualified System.Random      as Rand
+import           System.Random       (StdGen)
+import qualified System.Random       as Rand
 
 irisOptimal = kFoldFac (MlpConfig False [7, 5, 3] 4 []) 100 13 Iri.data'
 
