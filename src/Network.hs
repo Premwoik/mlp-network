@@ -1,120 +1,164 @@
-module Network (NetworkConn(..), reverseConn, forward, getResult, initializeNet, createConn, testForward, testBackward) where
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DeriveGeneric  #-}
 
-import qualified Data.Vector as Vec
-import Data.Vector ((!?), Vector)
-import Data.Maybe (fromJust)
-import Data.List
-import Debug.Trace
+module Network
+  ( Mlp(..)
+  , MlpConfig(..)
+  , Neuron(..)
+  , LearnData
+  , NeuronConnections
+  , Network(..)
+  , new
+  , empty
+  ) where
 
-import qualified System.Random as Rand
+import           Control.Monad       (forM, forM_, zipWithM)
+import           Control.Monad.ST
+import           Data.List
+import           Data.Maybe          (fromJust)
+import           Data.Vector         (Vector, (!), (!?), (//))
+import qualified Data.Vector         as Vec
+import qualified Data.Vector.Mutable as MVec
+import           Debug.Trace
+import           GHC.Generics
 
-data Perc = Perc {output :: Float, err :: Float, weights :: [Float], dWeights :: [Float]}
+import           Data.Aeson
+import           System.Random       (StdGen)
+import qualified System.Random       as Rand
 
-type Input = [Float]
+class Network net where
+  learn :: [LearnData] -> net -> net
+  forward :: [Double] -> net -> net
+  backpropagate :: [Double] -> net -> net
+  getResult :: net -> [Double]
 
-data NetworkConn = Default [Int] | CustomConn [[[Connection]]]
+instance Network Mlp where
+  learn = learnM
+  forward = forwardM
+  backpropagate = backpropagateM
+  getResult = getResultM
 
-instance Show NetworkConn where
-  show a = show "123"
+data Neuron = Neuron
+  { nOutput  :: Double
+  , nErr     :: Double
+  , nWeights :: [Double]
+  , nInputs  :: [InputConnection]
+  } deriving (Show, Generic)
 
-type Connection = (Int, Int)
+instance FromJSON Neuron
 
-data Layer = Layer {lPers :: (Vector Perc), lForwardConn :: [[Connection]], lBackwardConn :: [[Connection]]}
+instance ToJSON Neuron where
+  toEncoding = genericToEncoding defaultOptions
 
-data Mlp = Mlp (Vector Layer)
+type InputConnection = Int
 
+type NeuronConnections = [InputConnection]
 
-initializeNet :: NetworkConn -> IO Mlp
-initializeNet (Default sizes) =
-  initializeNet (CustomConn (createConn 0 sizes))
-initializeNet (CustomConn conns) = return $ Mlp $ Vec.empty
+type LayerDims = [Int]
 
+type NeuronVector = Vector Neuron
 
-createConn :: Int -> [Int] -> [[[Connection]]]
-createConn _ (_ : []) = []
-createConn i (s:s1:ss) =
-  consInLayer : createConn (i+1) (s1:ss)
+data Mlp = Mlp
+  { mDims    :: LayerDims
+  , mInputs  :: [Double]
+  , mNeurons :: NeuronVector
+  } deriving (Show, Generic)
+
+instance FromJSON Mlp
+
+instance ToJSON Mlp where
+  toEncoding = genericToEncoding defaultOptions
+
+type LearnData = ([Double], [Double])
+
+-- CREATION and HELPERS
+data MlpConfig = MlpConfig
+  { confBias         :: Bool
+  , confDims         :: [Int]
+  , confInputsNumber :: Int
+  , confConnections  :: [NeuronConnections]
+  } deriving (Show)
+
+new :: StdGen -> MlpConfig -> IO Mlp
+new stdGen (MlpConfig bias dims inputs cons) =
+  return . Mlp dims [] . Vec.fromList . getRes $
+  foldr (\c (gen, net) -> initNeuron (Rand.split gen) c net) (stdGen, []) cons
   where
-    consInLayer  = [percCons | _ <- [1..s1]]
-    percCons = [(i, j) | j <- [0..s-1]]
+    initNeuron (g1, g2) c net = (g1, Neuron 0 0 (initWeights g2 (length c)) c : net)
+    initWeights g len = take len $ Rand.randomRs (-1, 1) g
+    getRes (_, res) = res
 
-reverseConn :: [[[Connection]]] -> [[[Connection]]]
-reverseConn c =
-  let
---    take :: Int -> Int -> [Connection]
-    take l p = (c !! l) !! p
---    find :: Connection -> [Connection] -> Bool
-    find con cons =
-      (any (\c' -> c' == con) cons)
-    layerSize l = length (c !! l)
-    layersNum = length c
-    scan c'@(l', _) =
-      [(l, p) | l <- [l' .. layersNum - 1], p <- [0.. layerSize l - 1], find c' (take l p)]
-  in
-  [[scan (l,p) | p <- [0 .. layerSize l - 2]] | l <- [0 .. layersNum - 1]]
-
-
-reverseConn2 :: [Int] -> [[[Connection]]] -> [[[Connection]]]
-reverseConn2 sizes cons =
-
- p
-
-testBackward :: [[[Connection]]]
-testBackward =
-  [ [ [(0, 0), (0, 1)] -- 1, 0
-    , [(0, 0), (0, 1)] -- 1, 1
-    , [(0, 0), (0, 1)] -- 1, 2
-    ]
-  , [ [(1,0), (1,1), (1,2)] -- 2, 0
-    , [(1,0), (1,1), (1,2)] -- 2, 1
-    ]
-  ]
-
-testForward :: [[[Connection]]]
-testForward =
-  [ [ [(1,0), (1,1), (1,2)] -- 0, 0
-    , [(1,0), (1,1), (1,2)] -- 0, 1
-    ]
-  , [ [(2,0), (2,1)] -- 1,0
-    , [(2,0), (2,1)] -- 1,1
-    , [(2,0), (2,1)] -- 1,2
-    ]
-  ]
-
-
-
-getResult :: Mlp -> [Float]
-getResult (Mlp layers) =
-  Vec.toList . Vec.map output . lPers . Vec.last $ layers
-
-
-
---i assumed that first layer is first in the array
-forward :: Input -> Mlp -> Mlp
-forward input mlp@(Mlp layers) =
-  Mlp $ Vec.map activateLayer layers
-  where
-    activateLayer layer@(Layer percs conn _) =
-      layer {lPers = Vec.fromList $ zipWith activate (Vec.toList percs) conn}
-    activate perc conn =
-      sigmoid (findYs conn) perc
-    findYs c =
-      map output (fromJust (findCon c mlp))
+empty :: Mlp
+empty = Mlp [] [] Vec.empty
 
 --PRIVATE
+-- network default implementations
+learnM :: [LearnData] -> Mlp -> Mlp
+learnM data' net =
+  foldl (\net' (inputs, desireOutputs) -> backpropagateM desireOutputs (forwardM inputs net')) net data'
 
-sigmoid :: [Float] -> Perc -> Perc
-sigmoid input perc =
-  Perc output 0 weights' []
-  where 
-    weights' = weights perc
-    sumI = sum $ zipWith (\x y -> x * y) weights' input
+forwardM :: [Double] -> Mlp -> Mlp
+forwardM inputs (Mlp dims _ neurons) =
+  Mlp dims inputs $
+  runST
+    (do ns <- Vec.unsafeThaw neurons
+        forM_ [0 .. size] $ \i -> do
+          neuron <- MVec.unsafeRead ns i
+          refs <- mapM (`find` ns) (nInputs neuron)
+          let output = sigmoid refs (nWeights neuron)
+          MVec.unsafeWrite ns i (neuron {nOutput = output, nErr = 0})
+        Vec.unsafeFreeze ns)
+  where
+    size = length neurons - 1
+    find ref ns
+      | ref < 0 = return $ inputs !! (abs ref - 1)
+      | otherwise = nOutput <$> MVec.unsafeRead ns ref
+
+backpropagateM :: [Double] -> Mlp -> Mlp
+backpropagateM desireOutput (Mlp dims inputs neurons) =
+  Mlp dims inputs $
+  runST
+    (do ns <- Vec.unsafeThaw neurons
+        let pOutput = zip [neuronsNum - outputsNum .. neuronsNum - 1] desireOutput
+        forM_ pOutput $ \(i, d) -> MVec.modify ns (\n -> n {nErr = d - nOutput n}) i
+        forM_ (reverse [0 .. neuronsNum - 1]) $ \i -> do
+          actual <- MVec.unsafeRead ns i
+          let zipped = zip (nInputs actual) (nWeights actual)
+          newWeights <-
+            forM zipped $ \(ref, weight) ->
+              if ref >= 0
+                then do
+                  n <- MVec.unsafeRead ns ref
+                  MVec.unsafeWrite ns ref $ n {nErr = nErr n + computeError actual weight}
+                  return $ computeWeight actual weight (nOutput n)
+                else return $ computeWeight actual weight (inputs !! (abs ref - 1))
+          MVec.unsafeWrite ns i (actual {nWeights = newWeights})
+        Vec.unsafeFreeze ns)
+  where
+    neuronsNum = length neurons
+    outputsNum = length desireOutput
+
+getResultM :: Mlp -> [Double]
+getResultM (Mlp dims _ neurons) = Vec.toList . Vec.map nOutput $ outputsNeurons
+  where
+    outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
+    outputsNumber = last dims
+    len = length neurons
+
+-- computations
+computeError :: Neuron -> Double -> Double
+computeError n w = nErr n * w * (1 - nOutput n) * nOutput n
+
+computeWeight :: Neuron -> Double -> Double -> Double
+computeWeight neuron oldWeight yOutput =
+  momentum * oldWeight + ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
+  where
+    ni = 0.3
+    momentum = 1
+
+sigmoid :: [Double] -> [Double] -> Double
+sigmoid [] [] = 1
+sigmoid inputs weights = 1 / (1 + exp (beta * sumI))
+  where
     beta = -1
-    output = 1 / (1 + exp (beta * sumI))
-
-findCon :: [Connection] -> Mlp -> Maybe [Perc]
-findCon cons (Mlp layers) = mapM get cons 
-  where 
-    get (i, j) = layers !? i >>= (\layer -> (lPers layer) !? j)
-
-
+    sumI = sum $ zipWith (*) weights inputs
