@@ -6,6 +6,7 @@ module Network.Helpers
   , kFoldSummary
   , printNet
   , getResult
+  , replaceConns
   , findBestNet
   , createAllToAllConnections
   ) where
@@ -42,28 +43,26 @@ createAllToAllConnections conf@(MlpConfig False dims inputsNum _) =
   where
     makeRes (_, _, res) = conf {confConnections = concat (reverse res)}
 
-getResult :: Mlp -> [Double]
-getResult (Mlp dims _ neurons) = Vec.toList . Vec.map nOutput $ outputsNeurons
+replaceConns :: Int -> [NeuronConnections] -> MlpConfig -> MlpConfig
+replaceConns startIndex conns conf = conf {confConnections = prefix ++ conns ++ suffix}
   where
-    outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
-    outputsNumber = last dims
-    len = length neurons
+    prefix = take startIndex (confConnections conf)
+    suffix = drop (startIndex + length conns) (confConnections conf)
 
 printNet :: Mlp -> IO ()
 printNet (Mlp _ _ arr) = mapM_ print arr
 
 resAll :: [([Double], [Double])] -> Mlp -> IO ()
-resAll data' mlp = mapM_ (\(i, o) -> print (getResult (forwardM i mlp))) data'
+resAll data' mlp = mapM_ (\(i, o) -> print (getResult (forward i mlp))) data'
 
-tester :: [([Double], [Double])] -> Mlp -> (Double, Mlp)
-tester data' mlp = makeRes $ sum $ map (\(i, destOutput) -> compare destOutput (getResult (forwardM i mlp))) data'
+tester :: (Network net) => [([Double], [Double])] -> net -> (Double, net)
+tester data' mlp = makeRes $ sum $ map (\(i, destOutput) -> compare destOutput (getResult (forward i mlp))) data'
   where
     makeRes s = ((s / fromIntegral (length data')) * 100, mlp)
-    compare dest res
-      | otherwise =
-        if snd (maxi dest) == snd (maxi res)
-          then 1
-          else 0
+    compare dest res =
+      if snd (maxi dest) == snd (maxi res)
+        then 1
+        else 0
 
 minMaxScaling :: [([Double], [Double])] -> [([Double], [Double])]
 minMaxScaling d = zipWith (\n (_, c) -> (n, c)) (scale (map fst d)) d
@@ -72,7 +71,7 @@ minMaxScaling d = zipWith (\n (_, c) -> (n, c)) (scale (map fst d)) d
       let maxMin = findMaxMin inputs
        in map (zipWith (\(max', min') val -> (val - min') / (max' - min')) maxMin) inputs
 
-kFoldSummary :: [(Double, Mlp)] -> IO ()
+kFoldSummary :: (Network net) =>  [(Double, net)] -> IO ()
 kFoldSummary l = do
   zipWithM_ (\i (v, _) -> putStrLn ("K=" ++ show i ++ " accuracy: " ++ show v)) [1 ..] l
   putStrLn $ "Summary accuracy: " ++ show sumUpRes
@@ -118,7 +117,7 @@ findBestNet i cons learnData testData =
     (forM [1 .. i] $ \_ -> do
        g <- Rand.newStdGen
        net <- new g cons
-       let learnedNet = learnM learnData net
+       let learnedNet = learn learnData net
        return $ tester testData learnedNet)
   where
     findBest = maximumBy (comparing fst)

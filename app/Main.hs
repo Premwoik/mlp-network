@@ -11,7 +11,9 @@ main :: IO ()
 main = do
 --  res <- Factory.irisOptimal
 --  (bRes, bNet) <- Factory.andLogicOptimal
-  res <- Factory.wineOptimal
+--  res <- Factory.wineOptimal
+--  res <- Factory.irisEncOptimal
+  res <- Factory.wineEncOptimal
   putStrLn "RESULT:"
   kFoldSummary res
   return ()

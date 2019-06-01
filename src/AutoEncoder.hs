@@ -1,36 +1,46 @@
-module AutoEncoder where
+module AutoEncoder(
+  newEnc
+  , AutoEncoderConfig(..)
+  , AEnc(..)
+  , unwrapEncoder
+) where
 
-import qualified Network as N
-import Network(Mlp, MlpConfig(..))
+import Network
 import Network.Helpers(createAllToAllConnections)
 import System.Random(StdGen)
+import qualified Data.Vector as Vec
 
 data AutoEncoderConfig = AutoEncoderConfig {enConfHidden :: [Int], ecConfInputsNumber :: Int}
 data AEnc= AEnc {enType :: Type, enStruct :: Mlp}
 
+
 data Type = EncoderDecoder | Encoder | Decoder
 
+instance Network AEnc where
+  forward d t@(AEnc type' mlp) = AEnc type' $ forward d mlp
+  backpropagate desO t@(AEnc type' mlp) = AEnc type' $ backpropagate desO mlp
+  learn d t@(AEnc type' mlp) = AEnc type' $ learn (map (\(x,_) -> (x,x)) d) mlp
+  getResult (AEnc _ mlp) = getResult mlp
 
-forwardM :: [Double] -> AEnc-> AEnc
-forwardM d t@(AEnc type' mlp) = AEnc type' $ N.forwardM d mlp
-
-backpropagateM :: [Double] -> AEnc -> AEnc
-backpropagateM desO t@(AEnc type' mlp) = AEnc type' $ N.backpropagateM desO mlp
-
-learnM :: [[Double]] -> AEnc -> AEnc
-learnM d t@(AEnc type' mlp) =
-  AEnc type' $ N.learnM (map (\x -> (x,x)) d) mlp
-
-new :: StdGen -> AutoEncoderConfig -> IO AEnc
-new stdGen conf@(AutoEncoderConfig hid inputsNum) =
-  AEnc EncoderDecoder <$> N.new stdGen toMlpConfig
+newEnc :: StdGen -> AutoEncoderConfig -> IO AEnc
+newEnc stdGen conf@(AutoEncoderConfig hid inputsNum) =
+  AEnc EncoderDecoder <$> new stdGen toMlpConfig
   where
     toMlpConfig = createAllToAllConnections $ MlpConfig False layers inputsNum []
     layers = (inputsNum : hid) ++ [inputsNum]
 
 unwrapEncoder :: Mlp -> Mlp
-unwrapEncoder m = N.empty
+unwrapEncoder (Mlp dims _ neurons) =
+  Mlp newDims [] newNeurons
+  where
+    newDims = take (ceiling (fromIntegral (length dims) / 2)) dims
+    newNeurons = Vec.take (sum newDims) neurons
 
 unwrapDecoder :: Mlp -> Mlp
-unwrapDecoder m = N.empty
+unwrapDecoder (Mlp dims _ neurons) =
+  Mlp newDims [] newNeurons
+  where
+    newDims = drop (ceiling (fromIntegral (length dims) / 2) - 1) dims
+    dropSum = sum $ take (ceiling (fromIntegral (length dims) / 2)) dims
+    newNeurons = Vec.drop dropSum neurons
 

@@ -1,16 +1,15 @@
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE DeriveGeneric  #-}
+--{-# LANGUAGE TypeApplications #-}
 
 module Network
   ( Mlp(..)
   , MlpConfig(..)
   , Neuron(..)
   , LearnData
+  , NeuronConnections
+  , Network(..)
   , new
-  , forward
-  , forwardM
-  , backpropagateM
-  , learnM
   , empty
   ) where
 
@@ -27,6 +26,18 @@ import           GHC.Generics
 import           Data.Aeson
 import           System.Random       (StdGen)
 import qualified System.Random       as Rand
+
+class Network net where
+  learn :: [LearnData] -> net -> net
+  forward :: [Double] -> net -> net
+  backpropagate :: [Double] -> net -> net
+  getResult :: net -> [Double]
+
+instance Network Mlp where
+  learn = learnM
+  forward  = forwardM
+  backpropagate = backpropagateM
+  getResult = getResultM
 
 data Neuron = Neuron
   { nOutput  :: Double
@@ -61,19 +72,34 @@ instance ToJSON Mlp where
 
 type LearnData = ([Double], [Double])
 
+
+-- CREATION and HELPERS
+data MlpConfig = MlpConfig
+  { confBias         :: Bool
+  , confDims         :: [Int]
+  , confInputsNumber :: Int
+  , confConnections  :: [NeuronConnections]
+  } deriving (Show)
+
+new :: StdGen -> MlpConfig -> IO Mlp
+new stdGen (MlpConfig bias dims inputs cons) =
+  return . Mlp dims [] . Vec.fromList . getRes $
+  foldr (\c (gen, net) -> initNeuron (Rand.split gen) c net) (stdGen, []) cons
+  where
+    initNeuron (g1, g2) c net = (g1, Neuron 0 0 (initWeights g2 (length c)) c : net)
+    initWeights g len = take len $ Rand.randomRs (-1, 1) g
+    getRes (_, res) = res
+
+empty :: Mlp
+empty = Mlp [] [] Vec.empty
+
+--PRIVATE
+
+-- network default implementations
+
 learnM :: [LearnData] -> Mlp -> Mlp
 learnM data' net =
   foldl (\net' (inputs, desireOutputs) -> backpropagateM desireOutputs (forwardM inputs net')) net data'
-
-forward :: [Double] -> Mlp -> Mlp
-forward inputs (Mlp dims _ neurons) =
-  Mlp dims inputs $ foldl (\prev actual -> Vec.snoc prev (actual {nOutput = output actual prev})) Vec.empty neurons
-  where
-    output neuron prev = sigmoid (loadRefs neuron prev) (nWeights neuron)
-    loadRefs neuron ready = map (`find` ready) (nInputs neuron)
-    find ref ready
-      | ref < 0 = inputs !! (abs ref - 1)
-      | otherwise = nOutput $ ready ! ref
 
 forwardM :: [Double] -> Mlp -> Mlp
 forwardM inputs (Mlp dims _ neurons) =
@@ -116,34 +142,23 @@ backpropagateM desireOutput (Mlp dims inputs neurons) =
     neuronsNum = length neurons
     outputsNum = length desireOutput
 
--- CREATION and HELPERS
-data MlpConfig = MlpConfig
-  { confBias         :: Bool
-  , confDims         :: [Int]
-  , confInputsNumber :: Int
-  , confConnections  :: [NeuronConnections]
-  } deriving (Show)
 
-new :: StdGen -> MlpConfig -> IO Mlp
-new stdGen (MlpConfig bias dims inputs cons) =
-  return . Mlp dims [] . Vec.fromList . getRes $
-  foldr (\c (gen, net) -> initNeuron (Rand.split gen) c net) (stdGen, []) cons
+getResultM :: Mlp -> [Double]
+getResultM (Mlp dims _ neurons) = Vec.toList . Vec.map nOutput $ outputsNeurons
   where
-    initNeuron (g1, g2) c net = (g1, Neuron 0 0 (initWeights g2 (length c)) c : net)
-    initWeights g len = take len $ Rand.randomRs (-1, 1) g
-    getRes (_, res) = res
+    outputsNeurons = Vec.slice (len - outputsNumber) outputsNumber neurons
+    outputsNumber = last dims
+    len = length neurons
 
-empty :: Mlp
-empty = Mlp [] [] Vec.empty
 
---PRIVATE
+-- computations
 computeError :: Neuron -> Double -> Double
 computeError n w = nErr n * w * (1 - nOutput n) * nOutput n
 
 computeWeight :: Neuron -> Double -> Double -> Double
-computeWeight neuron oldWeight yOutput = c --traceShow (show oldWeight ++ " :: " ++ show (ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput)) c
+computeWeight neuron oldWeight yOutput =
+  momentum * oldWeight + ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
   where
-    c = momentum * oldWeight + ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
     ni = 0.3
     momentum = 1
 
