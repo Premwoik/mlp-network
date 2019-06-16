@@ -1,6 +1,17 @@
 module Main where
 
-import Lib
+import           Control.Monad        (mapM_)
+import           Data.AndLogic        as And
+import qualified Data.ByteString.Lazy as BS
+import           Debug.Trace
+import qualified Network.Factory      as Factory
+import           Network.Helpers
 
 main :: IO ()
-main = someFunc
+main = do
+  res <- Factory.wineOptimal
+--  resRec <- Factory.carRange
+  putStrLn "RESULT:"
+  kFoldSummary True res
+--  mapM_ (kFoldSummary False) resRec
+  return ()
