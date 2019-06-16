@@ -5,10 +5,12 @@ module Network.Helpers
   , kFold
   , kFoldSummary
   , printNet
+  , configGen
   , getResult
   , replaceConns
   , findBestNet
   , createAllToAllConnections
+  , splits
   ) where
 
 import           Control.Monad             (forM, forM_, zipWithM, zipWithM_)
@@ -24,6 +26,15 @@ import           Network
 import           System.Random             (StdGen)
 import qualified System.Random             as Rand
 import           VectorShuffling.Immutable
+
+configGen :: Bool -> Int -> Int -> Int -> Int -> [MlpConfig]
+configGen bias i o maxHiddenL maxP = map (\l -> MlpConfig bias l i []) layers
+  where
+    layers = concat [gn x maxP [o] | x <- [0 .. maxHiddenL]]
+
+gn :: Int -> Int -> [Int] -> [[Int]]
+gn 0 _ prev = [prev]
+gn n pMax prev = concat [gn (n - 1) pMax (x : prev) | x <- [head prev + 1 .. pMax]]
 
 createAllToAllConnections :: MlpConfig -> MlpConfig
 createAllToAllConnections conf@(MlpConfig True dims inputsNum _) =
@@ -49,17 +60,20 @@ replaceConns startIndex conns conf = conf {confConnections = prefix ++ conns ++ 
     prefix = take startIndex (confConnections conf)
     suffix = drop (startIndex + length conns) (confConnections conf)
 
-printNet :: Mlp -> IO ()
-printNet (Mlp _ _ arr) = mapM_ print arr
-
+--printNet :: Mlp -> IO ()
+--printNet (Mlp _ _ arr) = mapM_ print arr
 resAll :: [([Double], [Double])] -> Mlp -> IO ()
 resAll data' mlp = mapM_ (\(i, o) -> print (getResult (forward i mlp))) data'
 
 tester :: (Network net) => [([Double], [Double])] -> net -> (Double, net)
-tester data' mlp = makeRes $ sum $ map (\(i, destOutput) -> compare destOutput (getResult (forward i mlp))) data'
+tester data' mlp
+  -- traceShow (show (length data')) $
+ = makeRes $ sum $ map (\(i, destOutput) -> compare destOutput (getResult (forward i mlp))) data'
   where
     makeRes s = ((s / fromIntegral (length data')) * 100, mlp)
-    compare dest res =
+    compare dest res
+      --traceShow ("dest: " ++ show dest ++ "  |  res: " ++ show res) $
+     =
       if snd (maxi dest) == snd (maxi res)
         then 1
         else 0
@@ -71,9 +85,12 @@ minMaxScaling d = zipWith (\n (_, c) -> (n, c)) (scale (map fst d)) d
       let maxMin = findMaxMin inputs
        in map (zipWith (\(max', min') val -> (val - min') / (max' - min')) maxMin) inputs
 
-kFoldSummary :: (Network net) => [(Double, net)] -> IO ()
-kFoldSummary l = do
-  zipWithM_ (\i (v, _) -> putStrLn ("K=" ++ show i ++ " accuracy: " ++ show v)) [1 ..] l
+kFoldSummary :: (Network net) => Bool -> [(Double, net)] -> IO ()
+kFoldSummary details l = do
+  printNet $ snd $ head l
+  if details
+    then zipWithM_ (\i (v, _) -> putStrLn ("K=" ++ show i ++ " accuracy: " ++ show v)) [1 ..] l
+    else return ()
   putStrLn $ "Summary accuracy: " ++ show sumUpRes
   where
     sumUpRes = sum (map fst l) / len
@@ -105,7 +122,8 @@ splits k d = foldl (\acc x -> zipWith (++) (chunksOf (num x) x) acc) initAcc gro
 
 remove :: Int -> [a] -> ([a], a)
 --TODO is somewhere a bug. it caused that when k is relatively high, data are split into not enough folds
-remove i items = traceShow (show (length items)) (take i items ++ drop (1 + i) items, items !! i)
+remove i items --traceShow (show (length items))
+ = (take i items ++ drop (1 + i) items, items !! i)
 
 maxi xs = maximumBy (comparing fst) (zip xs [0 ..])
 

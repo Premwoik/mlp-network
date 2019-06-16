@@ -31,12 +31,14 @@ class Network net where
   forward :: [Double] -> net -> net
   backpropagate :: [Double] -> net -> net
   getResult :: net -> [Double]
+  printNet :: net -> IO ()
 
 instance Network Mlp where
   learn = learnM
   forward = forwardM
   backpropagate = backpropagateM
   getResult = getResultM
+  printNet = printNetM
 
 data Neuron = Neuron
   { nOutput  :: Double
@@ -93,9 +95,13 @@ empty = Mlp [] [] Vec.empty
 
 --PRIVATE
 -- network default implementations
+printNetM :: Mlp -> IO ()
+printNetM mlp = putStrLn $ "Net dimms" ++ show (mDims mlp)
+
 learnM :: [LearnData] -> Mlp -> Mlp
-learnM data' net =
-  foldl (\net' (inputs, desireOutputs) -> backpropagateM desireOutputs (forwardM inputs net')) net data'
+learnM data' net
+  --traceShow (show (length data')) $
+ = foldl (\net' (inputs, desireOutputs) -> backpropagateM desireOutputs (forwardM inputs net')) net data'
 
 forwardM :: [Double] -> Mlp -> Mlp
 forwardM inputs (Mlp dims _ neurons) =
@@ -153,7 +159,7 @@ computeWeight :: Neuron -> Double -> Double -> Double
 computeWeight neuron oldWeight yOutput =
   momentum * oldWeight + ni * nErr neuron * (1 - nOutput neuron) * nOutput neuron * yOutput
   where
-    ni = 0.3
+    ni = 1
     momentum = 1
 
 sigmoid :: [Double] -> [Double] -> Double

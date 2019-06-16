@@ -1,23 +1,17 @@
 module Main where
 
+import           Control.Monad        (mapM_)
 import           Data.AndLogic        as And
 import qualified Data.ByteString.Lazy as BS
-import           Data.Vector
 import           Debug.Trace
 import qualified Network.Factory      as Factory
 import           Network.Helpers
 
 main :: IO ()
 main = do
---  res <- Factory.irisOptimal
---  (bRes, bNet) <- Factory.andLogicOptimal
---  res <- Factory.wineOptimal
---  res <- Factory.irisEncOptimal
-  res <- Factory.wineEncOptimal
+  res <- Factory.wineOptimal
+--  resRec <- Factory.carRange
   putStrLn "RESULT:"
-  kFoldSummary res
+  kFoldSummary True res
+--  mapM_ (kFoldSummary False) resRec
   return ()
-
--- PRIVATE
---  BS.writeFile "net" $ encode bNet
---  readNet <- BS.readFile "net"

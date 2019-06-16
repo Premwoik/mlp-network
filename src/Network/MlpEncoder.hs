@@ -24,3 +24,4 @@ instance Network MlpEncoder where
     where
       mlpInput = data' ++ getResult (forward data' ae)
   getResult (MlpEncoder mlp _) = getResult mlp
+  printNet (MlpEncoder mlp _) = printNet mlp

@@ -30,6 +30,7 @@ instance Network AEnc where
   backpropagate desO t@(AEnc type' mlp) = AEnc type' $ backpropagate desO mlp
   learn d t@(AEnc type' mlp) = AEnc type' $ learn (map (\(x, _) -> (x, x)) d) mlp
   getResult (AEnc _ mlp) = getResult mlp
+  printNet (AEnc _ mlp) = printNet mlp
 
 newEnc :: StdGen -> AutoEncoderConfig -> IO AEnc
 newEnc stdGen conf@(AutoEncoderConfig hid inputsNum) = AEnc EncoderDecoder <$> new stdGen toMlpConfig
