@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="fb931e86-6200-4f26-ba77-3580ebe11734" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/../../1_MPH/brownian-motion-sim/app/MonteCarlo.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Main.hs" beforeDir="false" afterPath="$PROJECT_DIR$/app/Main.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Main.hi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Main.o" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../C/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/../../C/a.out" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -163,7 +163,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="1920" />
     <option name="y" value="27" />
     <option name="width" value="2560" />
@@ -175,6 +175,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -191,7 +192,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -318,11 +318,12 @@
       <workItem from="1560252417016" duration="2319000" />
       <workItem from="1560696924900" duration="949000" />
       <workItem from="1560934788375" duration="710000" />
+      <workItem from="1560969559051" duration="26000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="263451000" />
+    <option name="totallyTimeSpent" value="263477000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -334,7 +335,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="27" width="1920" height="1053" extended-state="7" />
+    <frame x="1920" y="27" width="1920" height="1053" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1693376" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -565,6 +566,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Network/AutoEncoder.hs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -610,13 +618,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
         </state>
       </provider>
     </entry>
