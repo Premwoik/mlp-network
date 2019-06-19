@@ -3,18 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="fb931e86-6200-4f26-ba77-3580ebe11734" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/../../1_MPH/brownian-motion-sim/app/MonteCarlo.hs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/res/learn/car.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/res/learn/wdbc.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Data/Car.hs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Data/WDBC.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Main.hs" beforeDir="false" afterPath="$PROJECT_DIR$/app/Main.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/test/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/res/test/iris.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network/AutoEncoder.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network/AutoEncoder.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network/Factory.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network/Factory.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network/Helpers.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network/Helpers.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Network/MlpEncoder.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Network/MlpEncoder.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Main.hi" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Main.o" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../C/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/../../C/a.out" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -37,8 +27,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="37" column="18" lean-forward="true" selection-start-line="37" selection-start-column="18" selection-end-line="37" selection-end-column="18" />
+            <state relative-caret-position="285">
+              <caret line="19" selection-start-line="19" selection-end-line="19" />
             </state>
           </provider>
         </entry>
@@ -46,26 +36,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Network/AutoEncoder.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
+            <state relative-caret-position="375">
+              <caret line="25" column="10" selection-start-line="25" selection-start-column="10" selection-end-line="25" selection-end-column="10" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/test/iris.data">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="438">
-              <caret line="1502" selection-start-line="1502" selection-end-line="1502" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/Main.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="17" lean-forward="true" selection-start-column="17" selection-end-column="17" />
+            <state relative-caret-position="165">
+              <caret line="11" column="32" selection-start-line="11" selection-start-column="32" selection-end-line="11" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -73,17 +54,36 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Network.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1269">
-              <caret line="171" lean-forward="true" selection-start-line="171" selection-end-line="171" />
+            <state relative-caret-position="1335">
+              <caret line="89" column="17" selection-start-line="89" selection-start-column="17" selection-end-line="89" selection-end-column="17" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Setup.hs">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mlp-neural-network2.iml">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/package.yaml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="630">
+              <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Network/Helpers.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+            <state relative-caret-position="1935">
+              <caret line="129" column="12" selection-start-line="129" selection-start-column="12" selection-end-line="129" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -92,7 +92,7 @@
         <entry file="file://$PROJECT_DIR$/src/Network/MlpEncoder.hs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="390">
-              <caret line="26" column="44" selection-start-line="26" selection-start-column="44" selection-end-line="26" selection-end-column="44" />
+              <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -153,21 +153,21 @@
         <option value="$PROJECT_DIR$/src/Data/AndLogic.hs" />
         <option value="$PROJECT_DIR$/src/Data/Car.hs" />
         <option value="$PROJECT_DIR$/src/Data/WDBC.hs" />
-        <option value="$PROJECT_DIR$/src/Network/AutoEncoder.hs" />
-        <option value="$PROJECT_DIR$/src/Network/MlpEncoder.hs" />
         <option value="$PROJECT_DIR$/res/test/iris.data" />
-        <option value="$PROJECT_DIR$/src/Network/Factory.hs" />
-        <option value="$PROJECT_DIR$/app/Main.hs" />
         <option value="$PROJECT_DIR$/src/Network.hs" />
+        <option value="$PROJECT_DIR$/src/Network/MlpEncoder.hs" />
         <option value="$PROJECT_DIR$/src/Network/Helpers.hs" />
+        <option value="$PROJECT_DIR$/src/Network/Factory.hs" />
+        <option value="$PROJECT_DIR$/src/Network/AutoEncoder.hs" />
+        <option value="$PROJECT_DIR$/app/Main.hs" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="240" />
-    <option name="y" value="158" />
-    <option name="width" value="1440" />
-    <option name="height" value="791" />
+    <option name="x" value="1920" />
+    <option name="y" value="27" />
+    <option name="width" value="2560" />
+    <option name="height" value="1053" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -176,7 +176,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -189,44 +188,11 @@
               <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="mlp-neural-network2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mlp-neural-network2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-              <item name="learn" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mlp-neural-network2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
-              <item name="res" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mlp-neural-network2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mlp-neural-network2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Data" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mlp-neural-network2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mlp-neural-network2" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Network" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -350,11 +316,14 @@
       <workItem from="1560206092862" duration="4488000" />
       <workItem from="1560244900717" duration="11000" />
       <workItem from="1560252417016" duration="2319000" />
+      <workItem from="1560696924900" duration="949000" />
+      <workItem from="1560934788375" duration="710000" />
+      <workItem from="1560969559051" duration="26000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="261792000" />
+    <option name="totallyTimeSpent" value="263477000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -366,9 +335,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
+    <frame x="1920" y="27" width="1920" height="1053" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16987179" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1693376" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -383,7 +352,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3297062" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.49412394" visible="true" weight="0.25353646" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.49412394" visible="true" weight="0.2937976" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50587606" side_tool="true" weight="0.41458106" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.3079434" />
@@ -457,12 +426,6 @@
     <entry file="file://$PROJECT_DIR$/mlp-neural-network2.cabal">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/Setup.hs">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mlp-neural-network2.iml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/ChangeLog.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -514,20 +477,6 @@
     <entry file="file://$PROJECT_DIR$/res/wine.data">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2113" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stack.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="38" column="15" selection-start-line="38" selection-start-column="15" selection-end-line="38" selection-end-column="15" />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/res/test/wine.data">
@@ -596,10 +545,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Data/WDBC.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="33" selection-start-line="20" selection-start-column="33" selection-end-line="20" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/test/iris.data">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22530">
+          <caret line="1502" selection-start-line="1502" selection-end-line="1502" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stack.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="39" selection-start-line="39" selection-end-line="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Network/AutoEncoder.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="25" column="10" selection-start-line="25" selection-start-column="10" selection-end-line="25" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Network.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1335">
+          <caret line="89" column="17" selection-start-line="89" selection-start-column="17" selection-end-line="89" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Setup.hs">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mlp-neural-network2.iml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Network/Helpers.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1935">
+          <caret line="129" column="12" selection-start-line="129" selection-start-column="12" selection-end-line="129" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Network/MlpEncoder.hs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
-          <caret line="26" column="44" selection-start-line="26" selection-start-column="44" selection-end-line="26" selection-end-column="44" />
+          <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -610,52 +621,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Network/AutoEncoder.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Data/WDBC.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="33" selection-start-line="20" selection-start-column="33" selection-end-line="20" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/test/iris.data">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="438">
-          <caret line="1502" selection-start-line="1502" selection-end-line="1502" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Network/Factory.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="37" column="18" lean-forward="true" selection-start-line="37" selection-start-column="18" selection-end-line="37" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/Main.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="17" lean-forward="true" selection-start-column="17" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Network.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1269">
-          <caret line="171" lean-forward="true" selection-start-line="171" selection-end-line="171" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Network/Helpers.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+        <state relative-caret-position="165">
+          <caret line="11" column="32" selection-start-line="11" selection-start-column="32" selection-end-line="11" selection-end-column="32" />
         </state>
       </provider>
     </entry>
