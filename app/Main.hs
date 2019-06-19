@@ -9,6 +9,7 @@ import           Network.Helpers
 
 main :: IO ()
 main = do
+  putStrLn "EXAMPLE wine dataset"
   res <- Factory.wineOptimal
 --  resRec <- Factory.carRange
   putStrLn "RESULT:"
